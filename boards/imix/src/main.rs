@@ -27,6 +27,8 @@ use kernel::hil::Controller;
 #[allow(unused_imports)]
 use kernel::{create_capability, debug, debug_gpio, static_init};
 
+use capsules::net::thread::mle;
+
 use components::adc::AdcComponent;
 use components::alarm::AlarmDriverComponent;
 use components::analog_comparator::AcComponent;
@@ -410,6 +412,11 @@ pub unsafe fn reset_handler() {
     )
     .finalize();
 
+    let mle_capsule = mle::initialize_all(
+        mux_mac,
+        mux_alarm as &'static MuxAlarm<'static, sam4l::ast::Ast>,
+    );
+
     let imix = Imix {
         pconsole,
         console,
@@ -446,6 +453,9 @@ pub unsafe fn reset_handler() {
     rf233.start();
 
     imix.pconsole.start();
+
+    mle_capsule.start();
+
 
     // Optional kernel tests. Note that these might conflict
     // with normal operation (e.g., steal callbacks from drivers, etc.),
