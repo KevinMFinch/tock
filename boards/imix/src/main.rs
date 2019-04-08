@@ -481,6 +481,7 @@ pub unsafe fn reset_handler() {
 
     //mock_udp2.start();
 
+    debug!("Hello github");
 
 
     // Optional kernel tests. Note that these might conflict
