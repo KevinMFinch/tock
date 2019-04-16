@@ -123,6 +123,7 @@ impl<A: time::Alarm> IP6Sender<'a> for IP6SendStruct<'a, A> {
         transport_header: TransportHeader,
         payload: &[u8],
     ) -> ReturnCode {
+        debug!("In ip send_to");
         self.sixlowpan.init(
             self.src_mac_addr,
             self.dst_mac_addr,
@@ -217,6 +218,7 @@ impl<A: time::Alarm> IP6SendStruct<'a, A> {
     }
 
     fn send_completed(&self, result: ReturnCode) {
+        debug!("In send_completed");
         self.client.map(move |client| client.send_done(result));
     }
 }

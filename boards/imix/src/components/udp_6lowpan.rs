@@ -85,7 +85,7 @@ impl UDPComponent {
 }
 
 impl Component for UDPComponent {
-    type Output = &'static capsules::net::udp::UDPDriver<'static>;
+    type Output = &'static capsules::net::thread::mle::MLEClient<'static>;
 
     unsafe fn finalize(&mut self) -> Self::Output {
         let grant_cap = create_capability!(capabilities::MemoryAllocationCapability);
@@ -177,13 +177,13 @@ impl Component for UDPComponent {
         ip_receive.set_client(udp_recv);
 
         let udp_driver = static_init!(
-            capsules::net::udp::UDPDriver<'static>,
-            capsules::net::udp::UDPDriver::new(
+            capsules::net::thread::mle::MLEClient<'static>,
+            capsules::net::thread::mle::MLEClient::new(
                 udp_send,
                 udp_recv,
-                self.board_kernel.create_grant(&grant_cap),
-                self.interface_list,
-                PAYLOAD_LEN
+                // self.board_kernel.create_grant(&grant_cap),
+                // self.interface_list,
+                // PAYLOAD_LEN
             )
         );
         udp_send.set_client(udp_driver);

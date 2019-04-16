@@ -16,6 +16,9 @@ use capsules::virtual_alarm::{MuxAlarm, VirtualMuxAlarm};
 use capsules::virtual_i2c::MuxI2C;
 use capsules::virtual_spi::{MuxSpiMaster, VirtualSpiMasterDevice};
 use capsules::virtual_uart::MuxUart;
+
+use capsules::net::thread::mle::MLEClient;
+
 use kernel::capabilities;
 use kernel::component::Component;
 use kernel::hil;
@@ -135,7 +138,7 @@ struct Imix {
     ipc: kernel::ipc::IPC,
     ninedof: &'static capsules::ninedof::NineDof<'static>,
     radio_driver: &'static capsules::ieee802154::RadioDriver<'static>,
-    udp_driver: &'static capsules::net::udp::UDPDriver<'static>,
+    udp_driver: &'static capsules::net::thread::mle::MLEClient<'static>,
     crc: &'static capsules::crc::Crc<'static, sam4l::crccu::Crccu<'static>>,
     usb_driver: &'static capsules::usb_user::UsbSyscallDriver<
         'static,
@@ -447,6 +450,7 @@ pub unsafe fn reset_handler() {
 
     imix.pconsole.start();
 
+
     // Optional kernel tests. Note that these might conflict
     // with normal operation (e.g., steal callbacks from drivers, etc.),
     // so do not run these and expect all services/applications to work.
@@ -460,6 +464,8 @@ pub unsafe fn reset_handler() {
     // aes_test::run_aes128_cbc();
 
     debug!("Initialization complete. Entering main loop");
+
+    udp_driver.start_handshake();
 
     extern "C" {
         /// Beginning of the ROM region containing app images.

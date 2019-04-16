@@ -10,7 +10,7 @@ use crate::net::ipv6::ipv6::TransportHeader;
 use crate::net::ipv6::ipv6_send::{IP6SendClient, IP6Sender};
 use crate::net::udp::udp::UDPHeader;
 use kernel::common::cells::OptionalCell;
-use kernel::ReturnCode;
+use kernel::{ReturnCode, debug};
 
 /// The `send_done` function in this trait is invoked after the UDPSender
 /// has completed sending the requested packet. Note that the
@@ -77,6 +77,7 @@ impl<T: IP6Sender<'a>> UDPSender<'a> for UDPSendStruct<'a, T> {
     }
 
     fn send_to(&self, dest: IPAddr, dst_port: u16, src_port: u16, buf: &[u8]) -> ReturnCode {
+        debug!("In send_to");
         let mut udp_header = UDPHeader::new();
         udp_header.set_dst_port(dst_port);
         udp_header.set_src_port(src_port);
